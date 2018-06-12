@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script type="text/javascript" src="init.js"></script>
+  <style>
+    th, td {
+      height: 40px;
+    }
+
+    td {
+      border-right: 1px solid #dedede;
+      border-bottom: 1px solid #dedede;
+      text-align: center;
+    }
+
+    th {
+      border: 1px solid #fff;
+      background: peachpuff;
+      border-right: 1px solid peachpuff;
+      border-bottom: 1px solid peachpuff;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!--<table style="width: 100%;" cellspacing="0" cellpadding="0">-->
+  <!--<tbody>-->
+  <!--<tr>-->
+  <!--<th width="200">bh2</th>-->
+  <!--<th colspan="2">bh1</th>-->
+  <!--</tr>-->
+  <!--<tr>-->
+  <!--<th>h1</th>-->
+  <!--<th>h2</th>-->
+  <!--<th>h3</th>-->
+  <!--</tr>-->
+  <!--<tr>-->
+  <!--<th>d1</th>-->
+  <!--<td>d2</td>-->
+  <!--<td>d3</td>-->
+  <!--</tr>-->
+  <!--</tbody>-->
+  <!--</table>-->
+</div>
+<script type="text/javascript">
+  function deepClone(obj) {
+    let objIndexes = []
+    let newObjIndexes = []
+
+    function _clone(obj) {
+      if (typeof obj !== 'object') {
+        return obj
+      }
+      if (obj === null) {
+        return obj
+      }
+
+      let index = objIndexes.indexOf(obj)
+
+      if (index !== -1) {
+        return newObjIndexes[index]
+      } else {
+        if (Object.prototype.toString.call(obj) === '[object Array]') {
+          let newObj = []
+          objIndexes.push(obj)
+          newObjIndexes.push(newObj)
+          obj.forEach(item => newObj.push(_clone(item)))
+          return newObj
+
+        } else {
+          let newObj = {}
+          objIndexes.push(obj)
+          newObjIndexes.push(newObj)
+          for (let key in obj) {
+            newObj[key] = _clone(obj[key])
+          }
+          return newObj
+        }
+      }
+    }
+
+    return _clone(obj)
+
+  }
+
+  let str = {
+    a: 1
+  }
+  str.b = str
+  str.c = [str]
+
+  function Eventer() {
+    this.events = {}
+  }
+
+  Eventer.prototype.emit = function (eventName, ...data) {
+    let event = this.events[eventName]
+    if (event) {
+      event.forEach(item => item(...data))
+    }
+  }
+
+  Eventer.prototype.on = function (eventName, cb) {
+    let event = this.events[eventName]
+    if (event) {
+      event.push(cb)
+    } else {
+      this.events[eventName] = [cb]
+    }
+  }
+
+  Eventer.prototype.destroy = function (eventName, cb) {
+    let event = this.events[eventName]
+    if (event) {
+      event.splice(event.indexOf(cb), 1)
+    } else {
+      // nothing
+    }
+  }
+
+</script>
+</body>
+</html>
