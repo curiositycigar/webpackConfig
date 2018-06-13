@@ -16,6 +16,11 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js'
   },
+  devServer: {
+    port:7666,
+    hot: true,
+    inline: true
+  },
   // 代码分割
   optimization: {
     splitChunks: {
@@ -30,6 +35,7 @@ module.exports = {
     }
   },
   plugins: [
+    new webpack.HotModuleReplacementPlugin(),
     // html插件，实际可包装方法生成
     new HtmlWebpackPlugin({
       filename: path.resolve(__dirname, 'dist', 'index.html'),
