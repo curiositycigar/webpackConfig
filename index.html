@@ -45,81 +45,45 @@
   <!--</table>-->
 </div>
 <script type="text/javascript">
-  function deepClone(obj) {
-    let objIndexes = []
-    let newObjIndexes = []
-
-    function _clone(obj) {
-      if (typeof obj !== 'object') {
-        return obj
-      }
-      if (obj === null) {
-        return obj
-      }
-
-      let index = objIndexes.indexOf(obj)
-
-      if (index !== -1) {
-        return newObjIndexes[index]
+  function compire(list) {
+    let roots = []
+    let cache = {}
+    list.forEach(item => {
+      let cacheId = cache[item.id]
+      let cachePid = cache[item.pid]
+      if (cacheId) {
+        Object.assign(cacheId, item)
       } else {
-        if (Object.prototype.toString.call(obj) === '[object Array]') {
-          let newObj = []
-          objIndexes.push(obj)
-          newObjIndexes.push(newObj)
-          obj.forEach(item => newObj.push(_clone(item)))
-          return newObj
-
+        cache[item.id] = item
+      }
+      if (cachePid) {
+        if (cachePid.children) {
+          cachePid.children.push(item)
         } else {
-          let newObj = {}
-          objIndexes.push(obj)
-          newObjIndexes.push(newObj)
-          for (let key in obj) {
-            newObj[key] = _clone(obj[key])
-          }
-          return newObj
+          cachePid.children = [item]
+        }
+      } else if(item.pid !== null) {
+        cache[item.pid] = {
+          children: [item]
         }
       }
+    })
+    for (let key in cache) {
+      if (cache[key].pid === null || !cache[cache[key].pid]) {
+        roots.push(cache[key])
+      }
     }
-
-    return _clone(obj)
-
+    console.log(cache)
+    return roots
   }
-
-  let str = {
-    a: 1
-  }
-  str.b = str
-  str.c = [str]
-
-  function Eventer() {
-    this.events = {}
-  }
-
-  Eventer.prototype.emit = function (eventName, ...data) {
-    let event = this.events[eventName]
-    if (event) {
-      event.forEach(item => item(...data))
-    }
-  }
-
-  Eventer.prototype.on = function (eventName, cb) {
-    let event = this.events[eventName]
-    if (event) {
-      event.push(cb)
-    } else {
-      this.events[eventName] = [cb]
-    }
-  }
-
-  Eventer.prototype.destroy = function (eventName, cb) {
-    let event = this.events[eventName]
-    if (event) {
-      event.splice(event.indexOf(cb), 1)
-    } else {
-      // nothing
-    }
-  }
-
+  let list = [
+    {id: 2, pid: 1, value: '2'},
+    {id: 1, pid: null, value: '1'},
+    {id: 3, pid: 1, value: '3'},
+    {id: 4, pid: 1, value: '4'},
+    {id: 5, pid: 2, value: '5'}
+  ]
+  console.log(compire(list))
 </script>
 </body>
 </html>
