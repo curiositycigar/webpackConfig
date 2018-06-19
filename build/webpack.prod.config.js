@@ -6,15 +6,7 @@ const merge = require('webpack-merge')
 const baseConfig = require('./webpack.base.config')
 
 const prodConfig = merge(baseConfig, {
-  plugns: [
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      },
-      sourceMap: false,
-      parallel: true
-    })
-  ]
+  mode: 'production'
 })
 
 module.exports = prodConfig
